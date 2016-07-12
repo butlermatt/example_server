@@ -9,3 +9,4 @@ environment:
 dependencies:
   args: '>=0.10.0 <0.14.0'
   shelf: '>=0.6.0 <0.7.0'
+  shelf_route: '^0.14.2'
