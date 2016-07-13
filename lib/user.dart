@@ -1,4 +1,6 @@
 class User {
+  static int _mId = -1;
+
   int id;
   bool admin = false;
   String first;
@@ -7,15 +9,22 @@ class User {
   DateTime birthday;
   Location location;
 
-  User(this.id, this.first, this.last, this.email, this.birthday, this.location);
-  User.fromJson(Map m) {
-    id = m['id'];
-    admin = m['admin'];
-    first = m['firstName'];
-    last = m['lastName'];
-    email = m['email'];
-    birthday = DateTime.parse(m['birthday']);
-    location = new Location.fromJson(m['location']);
+  User(this.id, this.first, this.last, this.email, this.birthday,
+      this.location) {
+    if (id == null) {
+      id = ++_mId;
+    } else if (id > _mId) {
+      _mId = id;
+    }
+  }
+
+  factory User.fromJson(Map m) {
+    var usr = new User(m['id'], m['firstName'], m['lastName'],
+        m['email'], DateTime.parse(m['birthday']),
+        new Location.fromJson(m['location']));
+
+    usr.admin = m['admin'];
+    return usr;
   }
 
   Map<String, dynamic> toJson() => <String, dynamic> {
