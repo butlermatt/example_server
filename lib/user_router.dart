@@ -29,7 +29,8 @@ class UserRouter {
   call(Router r) => r..get('', list)
     ..post('', addUser)
     ..get('{userId}', getUser)
-    ..put('{userId}', updateUser);
+    ..put('{userId}', updateUser)
+    ..delete('{userId}', deleteUser);
 
   /// Path: GET - /users{?...} provides a list of users in the system.
   /// Returns a list of users, optionally filtered by query parameters.
@@ -118,5 +119,28 @@ class UserRouter {
       }
     }
     return new shelf.Response(HttpStatus.OK);
+  }
+
+  /// Path: DELETE - /users/{userId} Removes the specified user ID from the
+  /// system. Returns [HttpStatus.BAD_REQUEST] on invalid userId,
+  /// [HttpStatus.NOT_FOUND] if the specified user id is not found, and
+  /// [HttpStatus.OK] on success.
+  shelf.Response deleteUser(shelf.Request req) {
+    var userId = int.parse(getPathParameter(req, 'userId'),
+        onError: (_) => null);
+    if (userId == null) {
+      return new shelf.Response(HttpStatus.BAD_REQUEST);
+    }
+
+    var usr = users.firstWhere((u) => u.id == userId, orElse: () => null);
+    if (usr == null) {
+      return new shelf.Response.notFound(null);
+    }
+
+    var rm = users.remove(usr);
+    if (!rm) {
+      return new shelf.Response.notFound(null);
+    }
+    return new shelf.Response.ok(null);
   }
 }
