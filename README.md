@@ -83,7 +83,8 @@ Value name | Value Type
 
 #### List all users
 
-Path to list all users is `/user`, via a `GET` request.
+Path to list all users is `/users`, via a `GET` request. Returns with an HTTP
+OK status code (200) and a list of [User Objects](#user-object)
 
 Example request:
 
@@ -105,3 +106,82 @@ Response:
 location":{"address":"42 Fake Street","city":"Fake Town","state":"WY",
 "country":"USA"}}]
 ```
+
+#### Add a new user
+
+Path to add a user is `/users`, via a `POST` request with a content type of
+`Content-Type: application/json`. The body of the request
+should be a `JSON` object of the [User Object](#user-object). The `id` field
+of the User object must be null or absent.
+
+Request will return with an HTTP OK status code (200) and the complete 
+User Object, including the new `id`. If an error occurs, it will return an 
+HTTP Bad Request (400) error code.
+
+Example Request:
+
+```
+curl -H "Content-Type: application/json" -X POST -d '{"id":null,"admin":false,"firstName":"Test","lastName":"Test","email":"notvalid@email.com","birthday":"1981-07-13","location":{"address":"456 My Street","city":"Halifax","state":"NS","country":"Canada"}}' http://localhost:8001/users
+```
+
+Response:
+
+```
+{"id":4,"admin":false,"firstName":"Test","lastName":"Test","email":"notvalid@email.com","birthday":"1981-07-13","location":{"address":"456 My Street","city":"Halifax","state":"NS","country":"Canada"}}
+```
+
+#### Retrieve single user
+ 
+Path to retrieve a single user by their User ID is `/users/{userId}` via a
+`GET` request. The `userId` should be an integer. If there is an error with
+the `userId` the request will return HTTP Bad Request (400) status code. If
+the specified `userId` is valid but cannot be found, then it will return with
+Http Not Found (404) status code. On success the request will return with
+Http OK (200) and a body of the JSON User Object.
+
+Example Request:
+
+```
+curl http://localhost:8001/users/2 
+```
+
+Example Response:
+
+```
+{"id":2,"admin":false,"firstName":"John","lastName":"Doe","email":"jd@fake.com","birthday":"1976-08-10","location":{"address":"42 Fake Street","city":"Fake Town","state":"WY","country":"USA"}}
+```
+
+#### Update a user
+
+To update a User, send a `PUT` request with the full user object JSON to
+`/users/{userId}`. The `userId` must also match the User ID of the User object
+or the request will return with an Http Bad Request (400) status. The request
+will return Http Bad Request (400) status on failure and Http OK (200) status,
+with the updated User object json in the body, on success. 
+
+Example Request:
+
+```
+curl -H "Content-Type: application/json" -X PUT -d '{"id":2,"admin":true,"firstName":"John","lastName":"Doe","email":"newEmail@fake.com","birthday":"1976-08-10","location":{"address":"42 Fake Street","city":"Fake Town","state":"WY","country":"USA"}}' http://localhost:8001/users/2
+```
+
+Example Response:
+
+```
+{"id":2,"admin":true,"firstName":"John","lastName":"Doe","email":"newEmail@fake.com","birthday":"1976-08-10","location":{"address":"42 Fake Street","city":"Fake Town","state":"WY","country":"USA"}}
+```
+
+#### Delete a user
+
+To remove a user, send a `DELETE` request to `/users/{userId}`. Request will
+return with Http Bad Request (400) status on invalid User ID. It will return 
+Http Not Found (404) status if the user ID is valid but not found. Otherwise
+it will return with Http OK (200) status.
+
+Example Request:
+
+```
+curl -X DELETE http://localhost:8001/users/1
+```
+
+There is no output to show from the response.
