@@ -118,7 +118,7 @@ class UserRouter {
         break;
       }
     }
-    return new shelf.Response(HttpStatus.OK);
+    return new shelf.Response.ok(JSON.encode(usr));
   }
 
   /// Path: DELETE - /users/{userId} Removes the specified user ID from the
